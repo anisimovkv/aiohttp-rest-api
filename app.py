@@ -3,6 +3,8 @@ import asyncio
 from api.middlewares import auth_middleware
 from aiohttp import web
 
+from aiohttp_swagger import *
+
 import api.routes
 
 
@@ -17,6 +19,8 @@ async def init(loop):
     # Setup middlewares
     middlewares = [auth_middleware]
     app.middlewares.extend(middlewares)
+
+    setup_swagger(app, swagger_url="/api/v1/doc", ui_version=2)
 
     host = "127.0.0.1"
     port = 4000
