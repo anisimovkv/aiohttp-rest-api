@@ -1,8 +1,13 @@
 import asyncio
+import json
+
+from pathlib import Path
 
 from aiohttp import web
 
 import api.routes
+
+simple_db = json.loads(Path('api/data/data.json').read_text())
 
 
 async def init(loop):
