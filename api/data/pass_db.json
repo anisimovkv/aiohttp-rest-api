@@ -1,0 +1,14 @@
+{
+  "batman": {
+    "password": "123",
+    "id": 0
+  },
+  "superman": {
+    "password": "123",
+    "id": 1
+  },
+  "flash": {
+    "password": "123",
+    "id": 2
+  }
+}

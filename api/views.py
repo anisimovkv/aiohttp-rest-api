@@ -1,6 +1,13 @@
-from aiohttp import web
+from datetime import datetime, timedelta
 
-from app import simple_db
+from aiohttp import web
+import jwt
+
+from api.db import simple_db
+from api.db import pass_db
+from api.utils import login_required
+
+KEY = 'secret'
 
 
 async def get_list(request):
@@ -18,6 +25,7 @@ async def get_data(request):
     return web.json_response({'list': data})
 
 
+@login_required
 async def set_data(request):
     data = await request.json()
     simple_db.append(data)
@@ -31,3 +39,23 @@ async def delete_data(request):
     except IndexError:
         data = {"id": "None"}
     return web.json_response({'object was deleted:': data})
+
+
+async def login(request):
+    data = await request.json()
+    username = data.get('username', None)
+    raw_password = data.get('password', None)
+
+    pass_from_db = None
+    data_db = None
+    if username is not None:
+        data_db = pass_db.get(username, None)
+        pass_from_db = data_db.get('password', None)
+    if pass_from_db is not None:
+        if pass_from_db.lower() == raw_password.lower():
+            encoded = jwt.encode(
+                {"id": data_db['id']}, KEY, algorithm="HS256")
+            return web.json_response({'token': encoded})
+
+    return web.json_response(
+        {'Error': 'Wrong username or password'}, status=400)

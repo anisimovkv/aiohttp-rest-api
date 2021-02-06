@@ -1,13 +1,9 @@
 import asyncio
-import json
 
-from pathlib import Path
-
+from api.middlewares import auth_middleware
 from aiohttp import web
 
 import api.routes
-
-simple_db = json.loads(Path('api/data/data.json').read_text())
 
 
 async def init(loop):
@@ -17,6 +13,10 @@ async def init(loop):
     # register routes
     for route in api.routes.routes:
         app.router.add_route(*route)
+
+    # Setup middlewares
+    middlewares = [auth_middleware]
+    app.middlewares.extend(middlewares)
 
     host = "127.0.0.1"
     port = 4000
