@@ -70,29 +70,6 @@ async def get_page(request):
     return web.json_response({'data': page_data, 'links': clear_link})
 
 
-async def get_data(request):
-    """
-       ---
-       description: Getting data by id
-       tags:
-       - Get data
-       produces:
-       - application/json
-       responses:
-           "200":
-               description: successful operation. Return "pong" text
-           "405":
-               description: invalid HTTP Method
-       """
-
-    data_id = int(request.match_info['id'])
-    try:
-        data = simple_db[data_id]
-    except IndexError:
-        data = {"id": "None"}
-    return web.json_response({'list': data})
-
-
 @login_required
 async def set_data(request):
     data = await request.json()

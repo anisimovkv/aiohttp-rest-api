@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 
 from api.middlewares import auth_middleware
@@ -22,16 +23,17 @@ async def init(loop):
 
     setup_swagger(app, swagger_url="/api/v1/doc", ui_version=2)
 
-    host = "127.0.0.1"
-    port = 4000
-
-    return app, host, port
+    return app
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--host', type=str, default="0.0.0.0")
+    parser.add_argument('--port', type=int, default=4000)
+    args = parser.parse_args()
     loop = asyncio.get_event_loop()
-    app, host, port = loop.run_until_complete(init(loop))
-    web.run_app(app, host=host, port=port)
+    app = loop.run_until_complete(init(loop))
+    web.run_app(app, host=args.host, port=args.port)
 
 
 if __name__ == '__main__':
