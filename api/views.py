@@ -1,6 +1,7 @@
-from datetime import datetime, timedelta
+from collections import OrderedDict
 
 from aiohttp import web
+
 import jwt
 
 from api.db import simple_db
@@ -12,6 +13,33 @@ async def get_list(request):
     # get all data
     json_data = simple_db
     return web.json_response({'list': json_data})
+
+
+async def get_page(request):
+    json_data = simple_db
+    index = 0
+    page = int(request.rel_url.query.get('page', 1))
+    if page != 0:
+        index = page - 1
+    page_data = json_data[index]
+    clean_url = 'http://' + str(request.host) + str(request.path)
+
+    paginator = OrderedDict.fromkeys(
+        ['self', 'first', 'last', 'privies', 'next'])
+
+    if page == 1:
+        paginator['self'] = clean_url + '?page=1'
+    else:
+        paginator['self'] = clean_url + f'?page={page}'
+        paginator['first'] = clean_url + '?page=1'
+        paginator['privies'] = clean_url + f'?page={page - 1}'
+
+    if page != len(json_data):
+        paginator['last'] = clean_url + f'?page={len(json_data)}'
+        paginator['next'] = clean_url + f'?page={page + 1}'
+
+    clear_link = {k: v for k, v in paginator.items() if v is not None}
+    return web.json_response({'data': page_data, 'links': clear_link})
 
 
 async def get_data(request):
