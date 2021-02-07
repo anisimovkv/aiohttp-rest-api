@@ -10,12 +10,40 @@ from api.utils import login_required
 
 
 async def get_list(request):
+    """
+       ---
+       description: Getting list data .
+       tags:
+       - Get data list
+       produces:
+       - application/json
+       responses:
+           "200":
+               description: successful operation. Return "pong" text
+           "405":
+               description: invalid HTTP Method
+       """
+
     # get all data
     json_data = simple_db
     return web.json_response({'list': json_data})
 
 
 async def get_page(request):
+    """
+       ---
+       description: Getting page by id in format url.
+       tags:
+       - Get page
+       produces:
+       - application/json
+       responses:
+           "200":
+               description: successful operation. Return "pong" text
+           "405":
+               description: invalid HTTP Method
+       """
+
     json_data = simple_db
     index = 0
     page = int(request.rel_url.query.get('page', 1))
@@ -43,6 +71,20 @@ async def get_page(request):
 
 
 async def get_data(request):
+    """
+       ---
+       description: Getting data by id
+       tags:
+       - Get data
+       produces:
+       - application/json
+       responses:
+           "200":
+               description: successful operation. Return "pong" text
+           "405":
+               description: invalid HTTP Method
+       """
+
     data_id = int(request.match_info['id'])
     try:
         data = simple_db[data_id]
@@ -58,7 +100,21 @@ async def set_data(request):
     return web.json_response({'list': data, 'id': len(simple_db) - 1})
 
 
+@login_required
 async def delete_data(request):
+    """
+    description: Delete data by id.
+    tags:
+    - Delete
+    produces:
+    - application/json
+    responses:
+        "200":
+            description: successful operation. Data was deleted or message.
+        "405":
+            description: invalid HTTP Method
+    """
+
     data_id = int(request.match_info['id'])
     try:
         data = simple_db.pop(data_id)
@@ -69,18 +125,19 @@ async def delete_data(request):
 
 async def login(request):
     """
-        ---
-        description: This end-point allow to test that service is up.
-        tags:
-        - Health check
-        produces:
-        - text/plain
-        responses:
-            "200":
-                description: successful operation. Return "pong" text
-            "405":
-                description: invalid HTTP Method
+    ---
+    description: Login.
+    tags:
+    - Login
+    produces:
+    - application/json
+    responses:
+        "200":
+            description: successful operation. Return token
+        "401":
+            description: Unauthorized
     """
+
     data = await request.json()
     username = data.get('username', None)
     raw_password = data.get('password', None)
